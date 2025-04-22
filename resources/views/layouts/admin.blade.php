@@ -30,10 +30,10 @@
         <a href="{{ route('admin.kategori.index') }}" class="flex items-center gap-3 hover:bg-gray-700 px-3 py-2 rounded">
           <span class="text-xl">📂</span> <span>Kategori Menu</span>
         </a>
-        <a href="#" class="flex items-center gap-3 hover:bg-gray-700 px-3 py-2 rounded">
+        <a href="{{ route('admin.reservasi.index') }}" class="flex items-center gap-3 hover:bg-gray-700 px-3 py-2 rounded">
           <span class="text-xl">📝</span> <span>Reservasi</span>
         </a>
-        <a href="#" class="flex items-center gap-3 hover:bg-gray-700 px-3 py-2 rounded">
+        <a href="{{ route('admin.transaksi.index') }}" class="flex items-center gap-3 hover:bg-gray-700 px-3 py-2 rounded">
           <span class="text-xl">💳</span> <span>Transaksi</span>
         </a>
         <a href="#" class="flex items-center gap-3 hover:bg-gray-700 px-3 py-2 rounded">

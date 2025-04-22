@@ -12,6 +12,8 @@ use App\Http\Controllers\DapurPesananController;
 use App\Http\Controllers\AdminDataMenuController;
 use App\Http\Controllers\PelayanPesananController;
 use App\Http\Controllers\AdminDataCategoriController;
+use App\Http\Controllers\AdminTransaksiController;
+use App\Http\Controllers\AdmminReservasiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,12 +28,12 @@ Route::controller(AuthController::class)->group(function (){
     Route::get('logout', 'logout')->name('logout');
 });
 
-//route admin
-// Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-//     Route::controller(DashboardController::class)->group(function () {
-//         Route::get('dashboard', 'admin_dashboard')->name('admin.dashboard');
-//     });
-// });
+//route pemilik
+Route::middleware(['auth', 'pemilik'])->prefix('pemilik')->group(function () {
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('dashboard', 'pemilik_dashboard')->name('pemilik.dashboard');
+    });
+});
 // Route untuk masing-masing role
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Dashboard untuk Admin
@@ -66,6 +68,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     // Menghapus kategori
     Route::delete('kategori/{kategori}', [AdminDataCategoriController::class, 'destroy'])->name('admin.kategori.destroy');
+    Route::get('/reservasi', [AdmminReservasiController::class, 'index'])->name('admin.reservasi.index');
+    Route::get('/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
 });
 // khusus pelayan
 Route::middleware(['auth', 'pelayan'])->prefix('pelayan')->group(function () {

@@ -25,6 +25,10 @@ public function pembayaran()
 {
     return $this->hasOne(Bayar::class, 'id_pesanan', 'id_pesanan');
 }
+public function pelanggan()
+{
+    return $this->belongsTo(User::class, 'pelanggan', 'id'); // Jika 'pelanggan' adalah ID dari tabel 'users'
+}
 
 
 public function getStatusAttribute()
