@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('menus', function (Blueprint $table) {
-            $table->id();
-            $table->string('foto')->nullable();
-            $table->string('nama_menu');
-            $table->text('keterangan')->nullable();
-            $table->unsignedBigInteger('kategori');
-            $table->integer('harga');
-            $table->timestamps();
+Schema::create('menus', function (Blueprint $table) {
+    $table->id();
+    $table->string('foto')->nullable(); // Menyimpan nama file / path gambar
+    $table->string('nama_menu');
+    $table->text('keterangan')->nullable();
+    $table->unsignedBigInteger('kategori');
+    $table->integer('harga');
+    $table->integer('stok')->default(0);
+    $table->timestamps();
 
-            $table->foreign('kategori')->references('id_kat_menu')->on('kategoris')->onDelete('cascade');
-        });
+    $table->foreign('kategori')->references('id_kat_menu')->on('kategoris')->onDelete('cascade');
+});
     }
 
     /**

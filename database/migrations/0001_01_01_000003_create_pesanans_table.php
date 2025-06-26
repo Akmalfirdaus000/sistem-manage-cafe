@@ -11,16 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-         Schema::create('pesanans', function (Blueprint $table) {
-            $table->id('id_pesanan');
-            $table->string('pelanggan', 200);
-            $table->string('meja', 10);
-            $table->unsignedBigInteger('pelayan');
-            $table->timestamp('waktu_pesanan')->useCurrent();
-            $table->timestamps();
+Schema::create('pesanans', function (Blueprint $table) {
+    $table->id('id_pesanan');
+    $table->string('nama_pelanggan', 200);
+    $table->string('no_hp', 15);
+    $table->string('meja', 10)->nullable();
+    $table->unsignedBigInteger('pelayan')->nullable();
+    $table->enum('tipe', ['langsung', 'reservasi'])->default('langsung');
+    $table->timestamp('waktu_pesanan')->useCurrent();
+    $table->timestamps();
 
-            $table->foreign('pelayan')->references('id')->on('users')->onDelete('cascade');
-        });
+    $table->foreign('pelayan')->references('id')->on('users')->onDelete('set null');
+});
+
     }
 
     /**

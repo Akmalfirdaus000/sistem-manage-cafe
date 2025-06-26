@@ -10,6 +10,7 @@
                 <tr>
                     <th class="py-3 px-6 text-left font-medium">Kode Pesanan</th>
                     <th class="py-3 px-6 text-left font-medium">Pelanggan</th>
+                    <th class="py-3 px-6 text-left font-medium">Meja</th>
                     <th class="py-3 px-6 text-left font-medium">Nominal Uang</th>
                     <th class="py-3 px-6 text-left font-medium">Total Bayar</th>
                     <th class="py-3 px-6 text-left font-medium">Waktu Bayar</th>
@@ -20,7 +21,8 @@
                 @forelse($transaksi as $item)
                 <tr class="border-b hover:bg-gray-50 transition duration-300">
                     <td class="py-3 px-6">{{ $item->id_pesanan }}</td>
-                    <td class="py-3 px-6">{{ $item->pesanan->pelanggan ?? 'Tidak Diketahui' }}</td>
+                    <td class="py-3 px-6">{{ $item->pesanan->nama_pelanggan ?? '-' }}</td>
+                    <td class="py-3 px-6">{{ $item->pesanan->meja }}</td>
                     <td class="py-3 px-6 text-blue-600 font-semibold">Rp {{ number_format($item->nominal_uang, 0, ',', '.') }}</td>
                     <td class="py-3 px-6 text-green-600 font-semibold">Rp {{ number_format($item->total_bayar, 0, ',', '.') }}</td>
                     <td class="py-3 px-6">{{ \Carbon\Carbon::parse($item->waktu_bayar)->translatedFormat('d F Y H:i') }}</td>
@@ -51,7 +53,7 @@
         <button onclick="document.getElementById('modalDetail-{{ $item->id_bayar }}').classList.add('hidden')" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">&times;</button>
         <h2 class="text-xl font-bold mb-4">Detail Transaksi</h2>
         <p><strong>Kode Pesanan:</strong> {{ $item->id_pesanan }}</p>
-        <p><strong>Pelanggan:</strong> {{ $item->pesanan->pelanggan ?? 'Tidak Diketahui' }}</p>
+        <p><strong>Pelanggan:</strong> {{ $item->pesanan->nama_pelanggan ?? '-' }}</p>
         <p><strong>Nominal Uang:</strong> Rp {{ number_format($item->nominal_uang, 0, ',', '.') }}</p>
         <p><strong>Total Bayar:</strong> Rp {{ number_format($item->total_bayar, 0, ',', '.') }}</p>
         <p><strong>Waktu Bayar:</strong> {{ \Carbon\Carbon::parse($item->waktu_bayar)->translatedFormat('d F Y H:i') }}</p>

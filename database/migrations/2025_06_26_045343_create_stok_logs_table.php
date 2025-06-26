@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-Schema::create('list_pesanans', function (Blueprint $table) {
-    $table->id('id_list_pesanan');
+      Schema::create('stok_logs', function (Blueprint $table) {
+    $table->id();
     $table->unsignedBigInteger('menu_id');
-    $table->unsignedBigInteger('kode_pesanan');
+    $table->enum('jenis', ['masuk', 'keluar']);
     $table->integer('jumlah');
-    $table->text('catatan')->nullable();
-    $table->enum('status', ['pending', 'dimasak', 'selesai'])->default('pending');
+    $table->string('keterangan')->nullable();
+    $table->unsignedBigInteger('user_id'); // hanya admin yang bisa input stok
     $table->timestamps();
 
     $table->foreign('menu_id')->references('id')->on('menus')->onDelete('cascade');
-    $table->foreign('kode_pesanan')->references('id_pesanan')->on('pesanans')->onDelete('cascade');
+    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 });
     }
 
@@ -30,6 +30,6 @@ Schema::create('list_pesanans', function (Blueprint $table) {
      */
     public function down(): void
     {
-        Schema::dropIfExists('list_pesanans');
+        Schema::dropIfExists('stok_logs');
     }
 };

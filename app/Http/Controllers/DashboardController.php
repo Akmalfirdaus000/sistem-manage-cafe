@@ -2,33 +2,45 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Reservasi;
+use App\Models\ListPesanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function admin_dashboard()
-    {
-        return view('admin.dashboard'); // resources/views/admin/dashboard.blade.php
-    }
+{
+    return view('admin.dashboard', [
+        'jumlahMenu' => \App\Models\Menu::count(),
+        'jumlahKategori' => \App\Models\Kategori::count(),
+        'jumlahUser' => \App\Models\User::whereIn('level', ['admin', 'pelayan'])->count(),
+        'jumlahReservasi' => \App\Models\Reservasi::count(), // nanti buat tabel ini
+        'pesananHariIni' => \App\Models\Pesanan::whereDate('created_at', now())->count(),
+    ]);
+}
 
-    public function pelayan_dashboard()
-    {
-        return view('pelayan.dashboard'); // resources/views/pelayan/dashboard.blade.php
-    }
 
-    public function kasir_dashboard()
-    {
-        return view('kasir.dashboard'); // resources/views/kasir/dashboard.blade.php
-    }
+public function pelayan_dashboard()
+{
+    $today = Carbon::today();
 
-    public function pemilik_dashboard()
-    {
-        return view('pemilik.dashboard'); // resources/views/pemilik/dashboard.blade.php
-    }
+    $jumlahPesananMasuk = ListPesanan::where('status', 'pending')->count();
+    $jumlahPesananDiproses = ListPesanan::where('status', 'dimasak')->count();
+    $jumlahSelesaiHariIni = ListPesanan::where('status', 'selesai')
+        ->whereDate('created_at', $today)
+        ->count();
+    $jumlahReservasiHariIni = Reservasi::whereDate('waktu_reservasi', $today)->count();
 
-    public function dapur_dashboard()
-    {
-        return view('dapur.dashboard'); // resources/views/dapur/dashboard.blade.php
-    }
+    return view('pelayan.dashboard', compact(
+        'jumlahPesananMasuk',
+        'jumlahPesananDiproses',
+        'jumlahSelesaiHariIni',
+        'jumlahReservasiHariIni'
+    ));
+}
+
+
+
 }

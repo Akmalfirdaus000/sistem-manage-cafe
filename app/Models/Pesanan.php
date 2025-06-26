@@ -11,7 +11,9 @@ class Pesanan extends Model
 
     protected $table = 'pesanans';
     protected $primaryKey = 'id_pesanan';
-    protected $fillable = ['pelanggan', 'meja', 'pelayan', 'waktu_pesanan'];
+   protected $fillable = [
+    'nama_pelanggan', 'no_hp', 'meja', 'pelayan', 'tipe', 'waktu_pesanan',
+];
 
     public function listPesanan()
     {
@@ -29,6 +31,13 @@ public function pelanggan()
 {
     return $this->belongsTo(User::class, 'pelanggan', 'id'); // Jika 'pelanggan' adalah ID dari tabel 'users'
 }
+// app/Models/Pesanan.php
+
+public function bayar()
+{
+    return $this->hasOne(Bayar::class, 'id_pesanan', 'id_pesanan');
+}
+
 
 
 public function getStatusAttribute()

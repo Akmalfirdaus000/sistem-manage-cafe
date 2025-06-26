@@ -23,7 +23,8 @@ class AdminDataMenuController extends Controller
             'nama_menu' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
             'kategori' => 'required|exists:kategoris,id_kat_menu',
-            'harga' => 'required|integer',
+            'harga' => 'required|integer|min:0',
+            'stok' => 'nullable|integer|min:0',
             'foto' => 'nullable|image|max:2048',
         ]);
 
@@ -37,10 +38,44 @@ class AdminDataMenuController extends Controller
             'keterangan' => $request->keterangan,
             'kategori' => $request->kategori,
             'harga' => $request->harga,
+            'stok' => $request->stok ?? 0,
             'foto' => $fotoPath,
         ]);
 
         return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil ditambahkan!');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama_menu' => 'required|string|max:255',
+            'keterangan' => 'nullable|string',
+            'kategori' => 'required|exists:kategoris,id_kat_menu',
+            'harga' => 'required|integer|min:0',
+            'stok' => 'nullable|integer|min:0',
+            'foto' => 'nullable|image|max:2048',
+        ]);
+
+        $menu = Menu::findOrFail($id);
+
+        // Jika ada foto baru, hapus lama
+        if ($request->hasFile('foto')) {
+            if ($menu->foto) {
+                Storage::disk('public')->delete($menu->foto);
+            }
+            $menu->foto = $request->file('foto')->store('menu_fotos', 'public');
+        }
+
+        $menu->update([
+            'nama_menu' => $request->nama_menu,
+            'keterangan' => $request->keterangan,
+            'kategori' => $request->kategori,
+            'harga' => $request->harga,
+            'stok' => $request->stok ?? 0,
+            'foto' => $menu->foto, // tetap gunakan yang lama kalau tidak ada upload baru
+        ]);
+
+        return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -54,37 +89,5 @@ class AdminDataMenuController extends Controller
         $menu->delete();
 
         return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil dihapus!');
-    }
-
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'nama_menu' => 'required|string|max:255',
-            'keterangan' => 'nullable|string',
-            'kategori' => 'required|exists:kategoris,id_kat_menu',
-            'harga' => 'required|integer',
-            'foto' => 'nullable|image|max:2048',
-        ]);
-
-        $menu = Menu::findOrFail($id);
-
-        if ($request->hasFile('foto')) {
-            // Hapus foto lama
-            if ($menu->foto) {
-                Storage::disk('public')->delete($menu->foto);
-            }
-
-            $fotoPath = $request->file('foto')->store('menu_fotos', 'public');
-            $menu->foto = $fotoPath;
-        }
-
-        $menu->update([
-            'nama_menu' => $request->nama_menu,
-            'keterangan' => $request->keterangan,
-            'kategori' => $request->kategori,
-            'harga' => $request->harga,
-        ]);
-
-        return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil diperbarui!');
     }
 }

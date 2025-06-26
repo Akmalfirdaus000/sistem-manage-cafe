@@ -14,7 +14,7 @@
 </head>
 
 <body class="flex items-center justify-center min-h-screen bg-gradient-to-r from-red-600 via-yellow-500 to-black">
-    
+
     <!-- Komponen Alert -->
     @include('components.alert')
 
@@ -54,8 +54,8 @@
 </form>
 
 
-        <p class="text-center text-gray-600 mt-6">Belum punya akun? 
-            <a href="{{ route('register') }}" class="text-red-600 hover:text-red-800 font-medium">Daftar</a>
+        <p class="text-center text-gray-600 mt-6">Belum punya akun?
+            {{-- <a href="{{ route('register') }}" class="text-red-600 hover:text-red-800 font-medium">Daftar</a> --}}
         </p>
 
         <div class="w-full flex justify-center items-center mt-3">
@@ -65,7 +65,7 @@
         </div>
 
         <!-- Social Login -->
-       
+
     </div>
 </body>
 

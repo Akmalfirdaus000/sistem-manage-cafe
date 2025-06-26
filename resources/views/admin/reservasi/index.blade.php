@@ -1,78 +1,59 @@
-    @extends('layouts.admin')
+@extends('layouts.admin')
 
-    @section('content')
-    <div class="container mx-auto px-4 py-6">
-        <!-- Header & Filter Section -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-semibold text-gray-900">Daftar Reservasi Selesai</h1>
-        </div>
+@section('content')
+<div class="container mx-auto px-4 py-6">
+    <h1 class="text-2xl font-bold mb-4">Data Reservasi</h1>
 
-        <!-- Pesanan Table -->
-        <div class="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
-            <table class="min-w-full table-auto">
-                <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                    <tr>
-                        <th class="py-3 px-6 text-left font-medium">Kode Pesanan</th>
-                        <th class="py-3 px-6 text-left font-medium">Pelanggan</th>
-                        <th class="py-3 px-6 text-left font-medium">Menu</th>
-                        <th class="py-3 px-6 text-left font-medium">Jumlah</th>
-                        <th class="py-3 px-6 text-left font-medium">Catatan</th>
-                        <th class="py-3 px-6 text-left font-medium">Status Pembayaran</th>
-                        <th class="py-3 px-6 text-left font-medium">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($reservasi as $pesanan)
-                    <tr class="border-b hover:bg-gray-50 transition duration-300">
-                        <td class="py-3 px-6">{{ $pesanan->kode_pesanan }}</td>
-                        <td class="py-3 px-6">{{ $pesanan->pesanan->pelanggan ?? 'Pelanggan Tidak Ditemukan' }}</td>
-
-
-                        <td class="py-3 px-6">{{ $pesanan->menu->nama_menu }}</td>
-                        <td class="py-3 px-6">{{ $pesanan->jumlah }}</td>
-                        <td class="py-3 px-6">{{ $pesanan->catatan ?? '-' }}</td>
-                        <td class="py-3 px-6">
-                            <span class="px-3 py-1 rounded-full {{ $pesanan->status == 'selesai' ? 'bg-green-500' : 'bg-red-500' }} text-white">
-                                {{ ucfirst($pesanan->status) }}
-                            </span>
-                        </td>
-                        <td class="py-3 px-6 flex gap-2">
-                            <!-- Detail Button -->
-                            <button onclick="document.getElementById('modalDetail-{{ $pesanan->id_list_pesanan }}').classList.remove('hidden')" class="bg-blue-600 text-white px-4 py-1 rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105">
-                                Detail
-                            </button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        <div class="px-6 py-4 bg-white border-t border-gray-200">
-            {{ $reservasi->links() }}
-        </div>
+    <div class="overflow-x-auto bg-white shadow rounded-lg">
+        <table class="min-w-full">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="px-4 py-2 text-left">Nama Pelanggan</th>
+                    <th class="px-4 py-2 text-left">No HP</th>
+                    <th class="px-4 py-2 text-left">Jumlah Orang</th>
+                    <th class="px-4 py-2 text-left">Meja</th>
+                    <th class="px-4 py-2 text-left">Waktu</th>
+                    <th class="px-4 py-2 text-left">Status</th>
+                    <th class="px-4 py-2 text-left">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($reservasis as $r)
+                <tr class="border-b hover:bg-gray-100">
+                    <td class="px-4 py-2">{{ $r->nama_pelanggan }}</td>
+                    <td class="px-4 py-2">{{ $r->no_hp }}</td>
+                    <td class="px-4 py-2">{{ $r->jumlah_orang }}</td>
+                    <td class="px-4 py-2">{{ $r->meja ?? '-' }}</td>
+                    <td class="px-4 py-2">{{ $r->waktu_reservasi->format('d M Y H:i') }}</td>
+                    <td class="px-4 py-2">
+                        <span class="px-2 py-1 text-white rounded {{ $r->status === 'menunggu' ? 'bg-yellow-500' : ($r->status === 'diterima' ? 'bg-green-600' : 'bg-red-500') }}">
+                            {{ ucfirst($r->status) }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-2">
+                        @if($r->status === 'menunggu')
+                        <form action="{{ route('admin.reservasi.updateStatus', $r->id) }}" method="POST" class="inline">
+                            @csrf @method('PUT')
+                            <input type="hidden" name="status" value="diterima">
+                            <button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="return confirm('Terima reservasi ini?')">Terima</button>
+                        </form>
+                        <form action="{{ route('admin.reservasi.updateStatus', $r->id) }}" method="POST" class="inline">
+                            @csrf @method('PUT')
+                            <input type="hidden" name="status" value="dibatalkan">
+                            <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 ml-2" onclick="return confirm('Batalkan reservasi ini?')">Tolak</button>
+                        </form>
+                        @else
+                        <span class="text-gray-500 italic">Sudah {{ $r->status }}</span>
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 
-    <!-- Modal Detail Pesanan -->
-    @foreach($reservasi as $pesanan)
-    <div id="modalDetail-{{ $pesanan->id_list_pesanan }}" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white w-full max-w-xl p-6 rounded-lg relative transform hover:scale-105 transition duration-300">
-            <button onclick="document.getElementById('modalDetail-{{ $pesanan->id_list_pesanan }}').classList.add('hidden')" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">&times;</button>
-            <h2 class="text-xl font-semibold mb-4">Detail Pesanan #{{ $pesanan->kode_pesanan }}</h2>
-            <div class="mb-4">
-                <h3 class="font-medium text-lg">Menu: {{ $pesanan->menu->nama_menu }}</h3>
-                <p><strong>Jumlah:</strong> {{ $pesanan->jumlah }}</p>
-                <p><strong>Catatan:</strong> {{ $pesanan->catatan ?? 'Tidak ada' }}</p>
-                <p><strong>Status Pembayaran:</strong>
-                    <span class="px-3 py-1 rounded-full {{ $pesanan->status == 'selesai' ? 'bg-green-500' : 'bg-red-500' }} text-white">
-                        {{ ucfirst($pesanan->status) }}
-                    </span>
-                </p>
-            </div>
-            <div class="text-right">
-                <button onclick="document.getElementById('modalDetail-{{ $pesanan->id_list_pesanan }}').classList.add('hidden')" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transform hover:scale-105 transition duration-300">Tutup</button>
-            </div>
-        </div>
+    <div class="mt-4">
+        {{ $reservasis->links() }}
     </div>
-    @endforeach
-
-    @endsection
+</div>
+@endsection
