@@ -38,9 +38,9 @@
                     📥 <span class="ml-2">Pesanan Masuk</span>
                 </a>
 
-                <a href="{{ route('pelayan.riwayat.index') }}" class="flex items-center p-3 rounded-lg hover:bg-red-100 text-gray-700">
+                {{-- <a href="{{ route('pelayan.riwayat.index') }}" class="flex items-center p-3 rounded-lg hover:bg-red-100 text-gray-700">
                     📜 <span class="ml-2">Riwayat Pesanan</span>
-                </a>
+                </a> --}}
 
                  <form action="{{ route('logout') }}" method="GET" class="mt-6">
           <button type="submit" class="flex items-center gap-3 w-full text-left hover:bg-red-600 px-3 py-2 rounded bg-red-500 text-white">

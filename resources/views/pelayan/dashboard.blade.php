@@ -13,10 +13,10 @@
         </div>
 
         <!-- Pesanan Diproses -->
-        <div class="bg-white shadow-md rounded-lg p-6 border-l-4 border-blue-500">
+        {{-- <div class="bg-white shadow-md rounded-lg p-6 border-l-4 border-blue-500">
             <h2 class="text-xl font-semibold">Sedang Diproses</h2>
             <p class="text-3xl font-bold text-blue-600 mt-2">{{ $jumlahPesananDiproses }}</p>
-        </div>
+        </div> --}}
 
         <!-- Reservasi Hari Ini -->
         <div class="bg-white shadow-md rounded-lg p-6 border-l-4 border-green-500">

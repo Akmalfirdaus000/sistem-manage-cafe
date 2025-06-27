@@ -24,14 +24,17 @@ class DashboardController extends Controller
 
 public function pelayan_dashboard()
 {
-    $today = Carbon::today();
+    $today = now()->toDateString(); // Format: YYYY-MM-DD
 
     $jumlahPesananMasuk = ListPesanan::where('status', 'pending')->count();
+
     $jumlahPesananDiproses = ListPesanan::where('status', 'dimasak')->count();
+
     $jumlahSelesaiHariIni = ListPesanan::where('status', 'selesai')
-        ->whereDate('created_at', $today)
+        // ->whereDate('created_at', $today)
         ->count();
-    $jumlahReservasiHariIni = Reservasi::whereDate('waktu_reservasi', $today)->count();
+
+    $jumlahReservasiHariIni = Reservasi::where('tanggal_reservasi', $today)->count();
 
     return view('pelayan.dashboard', compact(
         'jumlahPesananMasuk',
@@ -40,6 +43,7 @@ public function pelayan_dashboard()
         'jumlahReservasiHariIni'
     ));
 }
+
 
 
 
