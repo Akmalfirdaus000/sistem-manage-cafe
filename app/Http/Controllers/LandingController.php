@@ -9,24 +9,21 @@ use App\Models\Reservasi;
 use App\Models\ListPesanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class LandingController extends Controller
 {
-public function index()
-{
-    $menus = Menu::latest()->take(6)->get(); // ambil menu terbaru, bisa disesuaikan jumlahnya
-
-    return view('landing.index', compact('menus'));
-}
-
+    public function index()
+    {
+        $menus = Menu::latest()->take(6)->get();
+        return view('landing.index', compact('menus'));
+    }
 
     public function menu()
-{
-    $menus = Menu::with('kategori')->get();
-
-    return view('landing.menu', compact('menus'));
-}
-
+    {
+        $menus = Menu::with('kategori')->get();
+        return view('landing.menu', compact('menus'));
+    }
 
     public function reservasi()
     {
@@ -36,13 +33,33 @@ public function index()
     public function reservasiStore(Request $request)
     {
         $validated = $request->validate([
-            'nama_pelanggan' => 'required',
-            'no_hp' => 'required',
+            'nama_pelanggan' => 'required|string|max:255',
+            'no_hp' => 'required|string|max:20',
+            'email' => 'required|email',
             'jumlah_orang' => 'required|integer|min:1',
-            'waktu_reservasi' => 'required|date',
+            'meja' => 'required|in:Indoor,Outdoor,Sofa',
+            'tanggal_reservasi' => 'required|date',
+            'jam_reservasi' => 'required|date_format:H:i',
+            'bukti_transfer' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        Reservasi::create($validated + ['status' => 'menunggu']);
+        // Upload bukti transfer
+        $path = $request->file('bukti_transfer')->store('bukti_transfer', 'public');
+
+        // Simpan ke database
+        Reservasi::create([
+            'nama_pelanggan' => $validated['nama_pelanggan'],
+            'no_hp' => $validated['no_hp'],
+            'email' => $validated['email'],
+            'tanggal_reservasi' => $validated['tanggal_reservasi'],
+            'jam_reservasi' => $validated['jam_reservasi'],
+            'jumlah_orang' => $validated['jumlah_orang'],
+            'meja' => $validated['meja'],
+            'status_reservasi' => 'menunggu',
+            'status_pembayaran' => 'belum bayar',
+            'bukti_transfer' => $path,
+        ]);
+
         return redirect()->route('landing.reservasi')->with('success', 'Reservasi berhasil dikirim.');
     }
 
@@ -57,47 +74,45 @@ public function index()
         return view('landing.pesan', compact('menus'));
     }
 
-   public function pesanStore(Request $request)
-{
-    $request->validate([
-        'nama_pelanggan' => 'required|string|max:200',
-        'no_hp' => 'required|string|max:15',
-        'meja' => 'nullable|string|max:10',
-        'menu_id.*' => 'required|exists:menus,id',
-        'jumlah.*' => 'required|integer|min:1',
-        'catatan.*' => 'nullable|string|max:255',
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-        // 1. Buat Pesanan
-        $pesanan = Pesanan::create([
-            'nama_pelanggan' => $request->nama_pelanggan,
-            'no_hp' => $request->no_hp,
-            'meja' => $request->meja,
-            'pelayan' => null, // belum ditugaskan
-            'tipe' => 'langsung',
-            'waktu_pesanan' => now(),
+    public function pesanStore(Request $request)
+    {
+        $request->validate([
+            'nama_pelanggan' => 'required|string|max:200',
+            'no_hp' => 'required|string|max:15',
+            'meja' => 'nullable|string|max:10',
+            'menu_id.*' => 'required|exists:menus,id',
+            'jumlah.*' => 'required|integer|min:1',
+            'catatan.*' => 'nullable|string|max:255',
         ]);
 
-        // 2. Buat List Pesanan
-        foreach ($request->menu_id as $index => $menuId) {
-            ListPesanan::create([
-                'menu_id' => $menuId,
-                'kode_pesanan' => $pesanan->id_pesanan,
-                'jumlah' => $request->jumlah[$index],
-                'catatan' => $request->catatan[$index] ?? null,
-                'status' => 'pending',
+        DB::beginTransaction();
+
+        try {
+            $pesanan = Pesanan::create([
+                'nama_pelanggan' => $request->nama_pelanggan,
+                'no_hp' => $request->no_hp,
+                'meja' => $request->meja,
+                'pelayan' => null,
+                'tipe' => 'langsung',
+                'waktu_pesanan' => now(),
             ]);
+
+            foreach ($request->menu_id as $index => $menuId) {
+                ListPesanan::create([
+                    'menu_id' => $menuId,
+                    'kode_pesanan' => $pesanan->id_pesanan,
+                    'jumlah' => $request->jumlah[$index],
+                    'catatan' => $request->catatan[$index] ?? null,
+                    'status' => 'pending',
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('landing.index')->with('success', 'Pesanan Anda telah berhasil dikirim!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menyimpan pesanan. ' . $e->getMessage());
         }
-
-        DB::commit();
-
-        return redirect()->route('landing.index')->with('success', 'Pesanan Anda telah berhasil dikirim!');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return back()->with('error', 'Gagal menyimpan pesanan. ' . $e->getMessage());
     }
-}
 }

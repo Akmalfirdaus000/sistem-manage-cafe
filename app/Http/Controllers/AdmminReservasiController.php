@@ -3,29 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservasi;
-use App\Models\ListPesanan;
 use Illuminate\Http\Request;
 
 class AdmminReservasiController extends Controller
 {
+    // Menampilkan daftar reservasi untuk admin
     public function index()
     {
-        $reservasis = Reservasi::orderByDesc('waktu_reservasi')->paginate(10);
+        $reservasis = Reservasi::orderByDesc('tanggal_reservasi')->orderByDesc('jam_reservasi')->paginate(10);
         return view('admin.reservasi.index', compact('reservasis'));
     }
 
-    // Admin menyetujui atau membatalkan reservasi
-    public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:diterima,dibatalkan',
-        ]);
+    // Admin mengubah status reservasi: diterima / dibatalkan
+public function updateStatus(Request $request, $id)
+{
+    $request->validate([
+        'status_reservasi' => 'required|in:diterima,dibatalkan',
+    ]);
 
-        $reservasi = Reservasi::findOrFail($id);
-        $reservasi->status = $request->status;
-        $reservasi->save();
+    $reservasi = Reservasi::findOrFail($id);
+    $reservasi->status_reservasi = $request->status_reservasi;
 
-        return redirect()->route('admin.reservasi.index')->with('success', 'Status reservasi diperbarui.');
+    // Jika diterima, otomatis ubah status pembayaran jadi "sudah bayar"
+    if ($request->status_reservasi === 'diterima') {
+        $reservasi->status_pembayaran = 'sudah bayar';
     }
 
+    $reservasi->save();
+
+    return redirect()->route('admin.reservasi.index')->with('success', 'Status reservasi & pembayaran berhasil diperbarui.');
+}
+
+
+    // Melihat detail reservasi (jika ingin ditambahkan fitur modal/detail)
+    public function show($id)
+    {
+        $reservasi = Reservasi::findOrFail($id);
+        return view('admin.reservasi.show', compact('reservasi'));
+    }
 }

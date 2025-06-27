@@ -11,16 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('reservasis', function (Blueprint $table) {
+Schema::create('reservasis', function (Blueprint $table) {
     $table->id();
+
     $table->string('nama_pelanggan');
     $table->string('no_hp');
+    $table->string('email');
+
+    $table->date('tanggal_reservasi');             // format Y-m-d
+    $table->time('jam_reservasi');                 // format H:i:s
     $table->integer('jumlah_orang');
-    $table->string('meja')->nullable();
-    $table->timestamp('waktu_reservasi');
-    $table->enum('status', ['menunggu', 'diterima', 'dibatalkan'])->default('menunggu');
+
+    $table->enum('meja', ['Indoor', 'Outdoor', 'Sofa']); // pilihan
+
+    $table->enum('status_reservasi', ['menunggu', 'diterima', 'dibatalkan'])->default('menunggu');
+    $table->enum('status_pembayaran', ['belum bayar', 'sudah bayar'])->default('belum bayar');
+
+    $table->string('bukti_transfer')->nullable();  // path gambar
     $table->timestamps();
 });
+
     }
 
     /**

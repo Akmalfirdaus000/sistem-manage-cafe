@@ -52,6 +52,8 @@ Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
     // Reservasi & Transaksi
     Route::get('/reservasi', [AdmminReservasiController::class, 'index'])->name('admin.reservasi.index');
     Route::get('/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
+      Route::get('/reservasi', [AdmminReservasiController::class, 'index'])->name('admin.reservasi.index');
+    Route::put('/reservasi/{id}/status', [AdmminReservasiController::class, 'updateStatus'])->name('admin.reservasi.updateStatus');
     Route::get('/laporan-penjualan', [AdminLaporanController::class, 'index'])->name('admin.laporan.index');
 
 });
