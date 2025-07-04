@@ -74,45 +74,61 @@ class LandingController extends Controller
         return view('landing.pesan', compact('menus'));
     }
 
-    public function pesanStore(Request $request)
-    {
-        $request->validate([
-            'nama_pelanggan' => 'required|string|max:200',
-            'no_hp' => 'required|string|max:15',
-            'meja' => 'nullable|string|max:10',
-            'menu_id.*' => 'required|exists:menus,id',
-            'jumlah.*' => 'required|integer|min:1',
-            'catatan.*' => 'nullable|string|max:255',
+   public function pesanStore(Request $request)
+{
+    $request->validate([
+        'nama_pelanggan' => 'required|string|max:200',
+        'no_hp' => 'required|string|max:15',
+        'meja' => 'nullable|string|max:10',
+        'menu_id.*' => 'required|exists:menus,id',
+        'jumlah.*' => 'required|integer|min:1',
+        'catatan.*' => 'nullable|string|max:255',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // Buat pesanan utama
+        $pesanan = Pesanan::create([
+            'nama_pelanggan' => $request->nama_pelanggan,
+            'no_hp' => $request->no_hp,
+            'meja' => $request->meja,
+            'pelayan' => null,
+            'tipe' => 'langsung',
+            'waktu_pesanan' => now(),
         ]);
 
-        DB::beginTransaction();
+        // Loop menu & buat list pesanan
+        foreach ($request->menu_id as $index => $menuId) {
+            $jumlah = $request->jumlah[$index];
 
-        try {
-            $pesanan = Pesanan::create([
-                'nama_pelanggan' => $request->nama_pelanggan,
-                'no_hp' => $request->no_hp,
-                'meja' => $request->meja,
-                'pelayan' => null,
-                'tipe' => 'langsung',
-                'waktu_pesanan' => now(),
-            ]);
+            $menu = Menu::findOrFail($menuId);
 
-            foreach ($request->menu_id as $index => $menuId) {
-                ListPesanan::create([
-                    'menu_id' => $menuId,
-                    'kode_pesanan' => $pesanan->id_pesanan,
-                    'jumlah' => $request->jumlah[$index],
-                    'catatan' => $request->catatan[$index] ?? null,
-                    'status' => 'pending',
-                ]);
+            if ($menu->stok < $jumlah) {
+                throw new \Exception("Stok untuk {$menu->nama_menu} tidak mencukupi.");
             }
 
-            DB::commit();
+            // Kurangi stok
+            $menu->stok -= $jumlah;
+            $menu->save();
 
-            return redirect()->route('landing.index')->with('success', 'Pesanan Anda telah berhasil dikirim!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Gagal menyimpan pesanan. ' . $e->getMessage());
+            // Simpan ke list_pesanans
+            ListPesanan::create([
+                'menu_id' => $menuId,
+                'kode_pesanan' => $pesanan->id_pesanan,
+                'jumlah' => $jumlah,
+                'catatan' => $request->catatan[$index] ?? null,
+                'status' => 'pending',
+            ]);
         }
+
+        DB::commit();
+       return redirect()->route('landing.pesan')->with('success', 'Pesanan Anda sedang diproses. Mohon tunggu, makanan sedang disiapkan.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->with('error', 'Gagal menyimpan pesanan. ' . $e->getMessage());
     }
+}
+
 }

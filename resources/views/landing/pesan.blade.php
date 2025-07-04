@@ -1,3 +1,4 @@
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 @extends('layouts.landing', ['title' => 'Pesan Sekarang'])
 
 @section('content')
@@ -5,11 +6,37 @@
     <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-8">
         <h2 class="text-3xl font-bold text-red-600 mb-6 text-center">Form Pemesanan</h2>
 
-        @if(session('success'))
-            <div class="bg-green-100 text-green-800 p-3 rounded mb-4">{{ session('success') }}</div>
-        @elseif(session('error'))
-            <div class="bg-red-100 text-red-800 p-3 rounded mb-4">{{ session('error') }}</div>
-        @endif
+@if(session('success'))
+    <div class="flex items-center justify-between bg-green-100 border border-green-300 text-green-800 px-5 py-4 rounded-lg mb-6 shadow-md animate-fade-in">
+        <div class="flex items-center space-x-3">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="font-medium">{{ session('success') }}</span>
+        </div>
+        <button onclick="this.parentElement.remove()" class="text-green-600 hover:text-green-800 transition">
+            &times;
+        </button>
+    </div>
+@elseif(session('error'))
+    <div class="flex items-center justify-between bg-red-100 border border-red-300 text-red-800 px-5 py-4 rounded-lg mb-6 shadow-md animate-fade-in">
+        <div class="flex items-center space-x-3">
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            <span class="font-medium">{{ session('error') }}</span>
+        </div>
+        <button onclick="this.parentElement.remove()" class="text-red-600 hover:text-red-800 transition">
+            &times;
+        </button>
+    </div>
+@endif
+
+
 
         <form action="{{ route('landing.pesan.store') }}" method="POST">
             @csrf
@@ -41,8 +68,17 @@
                             <select name="menu_id[]" class="w-full border p-2 rounded" required>
                                 <option value="" disabled selected>-- Pilih Menu --</option>
                                 @foreach ($menus as $menu)
-                                    <option value="{{ $menu->id }}">{{ $menu->nama_menu }}</option>
-                                @endforeach
+    @if ($menu->stok <= 0)
+        <option value="" disabled class="text-gray-400 italic">
+            {{ $menu->nama_menu }} (Stok Habis)
+        </option>
+    @else
+        <option value="{{ $menu->id }}">
+            {{ $menu->nama_menu }}
+        </option>
+    @endif
+@endforeach
+
                             </select>
                         </div>
                         <div>
