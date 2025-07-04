@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Kafe El-Jufa' }}</title>
+    <title>{{ $title ?? 'KopKit Padang' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -15,17 +15,18 @@
 <body class="bg-white text-gray-800 font-sans">
 
     <!-- Navbar -->
-    <header class="fixed top-0 left-0 w-full z-50 bg-white shadow-md transition duration-500">
+    <header class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur shadow-md transition duration-500">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <!-- Logo -->
             <a href="{{ route('landing.index') }}" class="text-2xl font-extrabold text-red-600 tracking-wide hover:text-red-700 transition">
-                El-Jufa Café
+                KopKit Padang
             </a>
 
             <!-- Desktop Menu -->
             <nav class="hidden md:flex space-x-8 font-medium text-gray-700">
                 <a href="{{ route('landing.index') }}" class="hover:text-red-600 transition">Beranda</a>
                 <a href="{{ route('landing.menu') }}" class="hover:text-red-600 transition">Menu</a>
+                <a href="{{ route('landing.pesan') }}" class="hover:text-red-600 transition">Pesan</a>
                 <a href="{{ route('landing.reservasi') }}" class="hover:text-red-600 transition">Reservasi</a>
                 <a href="{{ route('landing.kontak') }}" class="hover:text-red-600 transition">Kontak</a>
             </nav>
@@ -43,20 +44,21 @@
             <nav class="flex flex-col space-y-2 py-4 px-6 text-gray-700 font-medium">
                 <a href="{{ route('landing.index') }}" class="hover:text-red-600">Beranda</a>
                 <a href="{{ route('landing.menu') }}" class="hover:text-red-600">Menu</a>
+                <a href="{{ route('landing.pesan') }}" class="hover:text-red-600">Pesan</a>
                 <a href="{{ route('landing.reservasi') }}" class="hover:text-red-600">Reservasi</a>
                 <a href="{{ route('landing.kontak') }}" class="hover:text-red-600">Kontak</a>
             </nav>
         </div>
     </header>
 
-    <!-- Halaman Konten -->
+    <!-- Konten -->
     <main class="pt-24 min-h-screen">
         @yield('content')
     </main>
 
     <!-- Footer -->
-    <footer class="mt-20 bg-gray-100 text-center py-6 text-sm text-gray-600 border-t">
-        &copy; {{ date('Y') }} El-Jufa Café. All rights reserved.
+    <footer class="mt-20 bg-red-600 text-white text-center py-6 text-sm">
+        &copy; {{ date('Y') }} <strong>KopKit Padang</strong>. Dibuat dengan ❤️ di Sumatera Barat.
     </footer>
 
     <!-- Script -->
