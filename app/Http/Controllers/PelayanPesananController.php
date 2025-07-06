@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Menu;
 use App\Models\Pesanan;
 use App\Models\ListPesanan;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PelayanPesananController extends Controller
 {
@@ -53,35 +55,60 @@ class PelayanPesananController extends Controller
 public function store(Request $request)
 {
     $request->validate([
-        'nama_pelanggan' => 'required',
-        'meja' => 'nullable|string',
+        'nama_pelanggan' => 'required|string|max:200',
+        'no_hp' => 'required|string|max:20',
+        'meja' => 'nullable|string|max:20',
         'menu_id.*' => 'required|exists:menus,id',
-        'jumlah.*' => 'required|numeric|min:1',
+        'jumlah.*' => 'required|integer|min:1',
+        'catatan.*' => 'nullable|string|max:255',
     ]);
 
-    $pesanan = Pesanan::create([
-        'nama_pelanggan' => $request->nama_pelanggan,
-        'meja' => $request->meja,
-        'waktu_pesanan' => now(),
-    ]);
+    DB::beginTransaction();
 
-    foreach ($request->menu_id as $index => $menu_id) {
-        $menu = Menu::find($menu_id);
-        $jumlah = $request->jumlah[$index];
+    try {
+        $kodePesanan = 'KP-' . strtoupper(Str::random(6));
 
-        ListPesanan::create([
-            'id_pesanan' => $pesanan->id_pesanan,
-            'id_menu' => $menu_id,
-            'jumlah' => $jumlah,
-            'status' => 'pending',
+        $pesanan = Pesanan::create([
+            'kode_pesanan'   => $kodePesanan,
+            'nama_pelanggan' => $request->nama_pelanggan,
+            'no_hp'          => $request->no_hp,
+            'meja'           => $request->meja,
+            'pelayan'        => auth()->user()->name ?? null, // jika pelayan login
+            'tipe'           => 'langsung',
+            'waktu_pesanan'  => now(),
         ]);
 
-        $menu->stok -= $jumlah;
-        $menu->save();
-    }
+        foreach ($request->menu_id as $index => $menuId) {
+            $jumlah = $request->jumlah[$index];
+            $catatan = $request->catatan[$index] ?? null;
 
-    return redirect()->route('pelayan.pesanan.index')->with('success', 'Pesanan berhasil ditambahkan.');
+            $menu = Menu::findOrFail($menuId);
+
+            if ($menu->stok < $jumlah) {
+                throw new \Exception("Stok tidak cukup untuk menu: {$menu->nama_menu}");
+            }
+
+            $menu->stok -= $jumlah;
+            $menu->save();
+
+            ListPesanan::create([
+                'menu_id'      => $menuId,
+                'kode_pesanan' => $pesanan->id_pesanan,
+
+                'jumlah'       => $jumlah,
+                'catatan'      => $catatan,
+                'status'       => 'pending',
+            ]);
+        }
+
+        DB::commit();
+        return redirect()->route('pelayan.pesanan.index')->with('success', 'Pesanan berhasil ditambahkan.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->with('error', 'Gagal menambah pesanan. ' . $e->getMessage());
+    }
 }
+
 public function edit($id)
 {
     $pesanan = Pesanan::with('listPesanan.menu')->findOrFail($id);
