@@ -1,71 +1,69 @@
 @extends('layouts.pelayan')
 
 @section('content')
-<main>
-    <h1 class="text-2xl font-bold mb-4">Buat Pesanan Baru</h1>
-    <div class="bg-white p-6 shadow rounded">
-        <form action="{{ route('pelayan.pesanan.store') }}" method="POST">
-            @csrf
-            <div class="mb-4">
-                <label class="block text-gray-700">Nama Pelanggan</label>
-                <input type="text" name="pelanggan" class="w-full border p-2 rounded" required>
+<div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-bold text-red-600 mb-6">Tambah Pesanan Baru</h2>
+
+    <form action="{{ route('pelayan.pesanan.store') }}" method="POST">
+        @csrf
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+            <div>
+                <label class="font-medium">Nama Pelanggan</label>
+                <input type="text" name="nama_pelanggan" class="w-full border rounded p-2" required>
             </div>
-            <div class="mb-4">
-                <label class="block text-gray-700">Nomor Meja (Opsional)</label>
-                <input type="text" name="meja" class="w-full border p-2 rounded">
+            <div>
+                <label class="font-medium">No HP</label>
+                <input type="text" name="no_hp" class="w-full border rounded p-2" required>
             </div>
-            
-            <div id="menu-container">
-                <div class="menu-item mb-4 flex space-x-2">
-                    <select name="menus[0][id]" class="w-2/3 border p-2 rounded" required>
-                        <option value="" disabled selected>Pilih Menu</option>
-                        @foreach ($menus as $menu)
-                            <option value="{{ $menu->id }}">{{ $menu->nama_menu }} - Rp{{ number_format($menu->harga, 0, ',', '.') }}</option>
-                        @endforeach
-                    </select>
-                    <input type="number" name="menus[0][jumlah]" class="w-1/4 border p-2 rounded" required min="1" placeholder="Jumlah">
-                    <input type="text" name="menus[0][catatan]" class="w-1/3 border p-2 rounded" placeholder="Catatan">
-                    <button type="button" class="remove-menu bg-red-500 text-white px-2 py-1 rounded">✕</button>
+        </div>
+
+        <div class="mb-4">
+            <label class="font-medium">Nomor Meja (opsional)</label>
+            <input type="text" name="meja" class="w-full border rounded p-2">
+        </div>
+
+        <div id="menuWrapper" class="space-y-4">
+            <div class="menu-item bg-gray-50 p-4 rounded border">
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="font-medium">Pilih Menu</label>
+                        <select name="menu_id[]" class="w-full border p-2 rounded" required>
+                            <option value="" disabled selected>-- Pilih Menu --</option>
+                            @foreach ($menus as $menu)
+                                <option value="{{ $menu->id }}">{{ $menu->nama_menu }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-medium">Jumlah</label>
+                        <input type="number" name="jumlah[]" class="w-full border p-2 rounded" min="1" required>
+                    </div>
+                    <div>
+                        <label class="font-medium">Catatan</label>
+                        <input type="text" name="catatan[]" class="w-full border p-2 rounded">
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <button type="button" id="add-menu" class="bg-blue-500 text-white px-4 py-2 rounded">+ Tambah Menu</button>
-            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded mt-4">Simpan Pesanan</button>
-        </form>
-    </div>
-</main>
+        <div class="text-right mt-3">
+            <button type="button" onclick="tambahMenu()" class="text-sm bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Tambah Menu</button>
+        </div>
+
+        <div class="text-center mt-6">
+            <button type="submit" class="bg-red-600 text-white px-6 py-3 rounded hover:bg-red-700">Simpan Pesanan</button>
+        </div>
+    </form>
+</div>
 
 <script>
-    let menuIndex = 1;
-    document.getElementById('add-menu').addEventListener('click', function() {
-        let menuContainer = document.getElementById('menu-container');
-        let newMenu = document.createElement('div');
-        newMenu.classList.add('menu-item', 'mb-4', 'flex', 'space-x-2');
-        newMenu.innerHTML = `
-            <select name="menus[${menuIndex}][id]" class="w-2/3 border p-2 rounded" required>
-                <option value="" disabled selected>Pilih Menu</option>
-                @foreach ($menus as $menu)
-                    <option value="{{ $menu->id }}">{{ $menu->nama_menu }} - Rp{{ number_format($menu->harga, 0, ',', '.') }}</option>
-                @endforeach
-            </select>
-            <input type="number" name="menus[${menuIndex}][jumlah]" class="w-1/4 border p-2 rounded" required min="1" placeholder="Jumlah">
-            <input type="text" name="menus[${menuIndex}][catatan]" class="w-1/3 border p-2 rounded" placeholder="Catatan">
-            <button type="button" class="remove-menu bg-red-500 text-white px-2 py-1 rounded">✕</button>
-        `;
-        menuContainer.appendChild(newMenu);
-
-        newMenu.querySelector('.remove-menu').addEventListener('click', function() {
-            newMenu.remove();
-        });
-
-        menuIndex++;
-    });
-
-    document.querySelectorAll('.remove-menu').forEach(button => {
-        button.addEventListener('click', function() {
-            this.parentElement.remove();
-        });
-    });
+    function tambahMenu() {
+        const wrapper = document.getElementById('menuWrapper');
+        const item = document.querySelector('.menu-item');
+        const clone = item.cloneNode(true);
+        clone.querySelectorAll('input, select').forEach(i => i.value = '');
+        wrapper.appendChild(clone);
+    }
 </script>
-
 @endsection

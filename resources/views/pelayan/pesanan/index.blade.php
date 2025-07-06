@@ -2,6 +2,12 @@
 
 @section('content')
 <main>
+    <div class="mb-4 flex justify-end">
+    <a href="{{ route('pelayan.pesanan.create') }}" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
+        + Tambah Pesanan
+    </a>
+</div>
+
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Daftar Pesanan Masuk</h1>
 
     <div class="bg-white p-6 shadow rounded-lg overflow-x-auto">
@@ -59,9 +65,11 @@
                             <span class="text-gray-500">Belum ada item</span>
                         @endif
                     </td>
-                    <td class="p-3 text-center">
-                        <a href="{{ route('pelayan.pesanan.show', $pesanan->id_pesanan) }}" class="text-blue-600 hover:underline">Detail</a>
-                    </td>
+                    <td class="p-3 text-center space-y-2 flex flex-col items-center">
+    <a href="{{ route('pelayan.pesanan.show', $pesanan->id_pesanan) }}" class="text-blue-600 hover:underline">Detail</a>
+    <a href="{{ route('pelayan.pesanan.edit', $pesanan->id_pesanan) }}" class="text-yellow-600 hover:underline">Edit</a>
+</td>
+
                 </tr>
                 @empty
                 <tr>

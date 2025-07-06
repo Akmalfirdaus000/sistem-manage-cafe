@@ -61,7 +61,10 @@ Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
 // === PELAYAN ===
 Route::middleware(['auth', 'pelayan'])->prefix('pelayan')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'pelayan_dashboard'])->name('pelayan.dashboard');
-
+ Route::get('/pesanan/create', [PelayanPesananController::class, 'create'])->name('pelayan.pesanan.create');
+    Route::post('/pesanan', [PelayanPesananController::class, 'store'])->name('pelayan.pesanan.store');
+    Route::get('/pesanan/{id}/edit', [PelayanPesananController::class, 'edit'])->name('pelayan.pesanan.edit');
+    Route::put('/pesanan/{id}', [PelayanPesananController::class, 'update'])->name('pelayan.pesanan.update');
     Route::controller(PelayanPesananController::class)->group(function () {
  Route::get('/pesanan', [PelayanPesananController::class, 'index'])->name('pelayan.pesanan.index');
     Route::get('/pesanan/{id}', [PelayanPesananController::class, 'show'])->name('pelayan.pesanan.show');
