@@ -3,17 +3,17 @@
 @section('content')
 
 <!-- Hero Section -->
-<section id="home" class="relative bg-cover bg-center h-screen flex items-center justify-center text-white" style="background-image: url('/images/kopkit-hero.jpg');">
-    <div class="absolute inset-0 bg-[#3E2723] bg-opacity-60"></div>
+<section id="home" class="relative bg-cover bg-center h-screen flex items-center justify-center text-white" style="background-image: url('/landing.jpg');">
     <div class="relative z-10 text-center px-6">
         <h1 class="text-4xl md:text-6xl font-bold mb-4">Selamat Datang di <span class="text-[#D7CCC8]">KopKit Padang</span></h1>
         <p class="text-lg md:text-2xl mb-6 text-[#F5F5F5]">Rasakan nikmatnya kopi & menu istimewa dalam suasana cozy ala KopKit</p>
         <div class="space-x-4">
             <a href="{{ route('landing.reservasi') }}" class="bg-[#5D4037] hover:bg-[#4E342E] text-white font-semibold px-6 py-3 rounded-full transition">Reservasi Sekarang</a>
-            <a href="{{ route('landing.pesan') }}" class="border-2 border-[#5D4037] text-[#5D4037] hover:bg-[#5D4037] hover:text-white px-6 py-3 rounded-full font-semibold transition">Pesan Sekarang</a>
+            <a href="{{ route('landing.pesan') }}" class="border-2 border-[#5D4037] text-white hover:bg-[#5D4037] hover:text-white px-6 py-3 rounded-full font-semibold transition">Pesan Sekarang</a>
         </div>
     </div>
 </section>
+
 
 <!-- Tentang Kami -->
 <section id="about" class="py-16 bg-white">

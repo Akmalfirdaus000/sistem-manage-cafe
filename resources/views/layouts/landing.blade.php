@@ -18,7 +18,7 @@
     <header class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur shadow-md transition duration-500">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <!-- Logo -->
-            <a href="{{ route('landing.index') }}" class="text-2xl font-extrabold text-red-600 tracking-wide hover:text-red-700 transition">
+            <a href="/login" class="text-2xl font-extrabold text-[#5D4037] tracking-wide hover:text-red-700 transition">
                 KopKit Padang
             </a>
 
@@ -57,7 +57,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="mt-20 bg-red-600 text-white text-center py-6 text-sm">
+    <footer class="mt-20 bg-[#5D4037] text-white text-center py-6 text-sm">
         &copy; {{ date('Y') }} <strong>KopKit Padang</strong>. Dibuat dengan ❤️ di Sumatera Barat.
     </footer>
 
