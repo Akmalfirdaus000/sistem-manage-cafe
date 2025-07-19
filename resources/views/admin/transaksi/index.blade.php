@@ -26,11 +26,18 @@
                     <td class="py-3 px-6 text-blue-600 font-semibold">Rp {{ number_format($item->nominal_uang, 0, ',', '.') }}</td>
                     <td class="py-3 px-6 text-green-600 font-semibold">Rp {{ number_format($item->total_bayar, 0, ',', '.') }}</td>
                     <td class="py-3 px-6">{{ \Carbon\Carbon::parse($item->waktu_bayar)->translatedFormat('d F Y H:i') }}</td>
-                    <td class="py-3 px-6">
-                        <button onclick="document.getElementById('modalDetail-{{ $item->id_bayar }}').classList.remove('hidden')" class="bg-indigo-600 text-white px-4 py-1 rounded hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
-                            Detail
-                        </button>
-                    </td>
+<td class="py-3 px-6 space-y-2">
+    <button onclick="document.getElementById('modalDetail-{{ $item->id_bayar }}').classList.remove('hidden')"
+            class="w-full bg-indigo-600 text-white px-4 py-1 rounded hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
+        Detail
+    </button>
+
+    <a href="{{ route('admin.pesanan.struk', $item->id_pesanan) }}" target="_blank"
+       class="w-full inline-block bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition duration-300 transform hover:scale-105 text-center">
+        Cetak Struk
+    </a>
+</td>
+
                 </tr>
                 @empty
                 <tr>

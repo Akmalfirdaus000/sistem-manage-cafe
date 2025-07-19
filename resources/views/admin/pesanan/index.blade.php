@@ -33,6 +33,7 @@
                             <button onclick="document.getElementById('modalBayar-{{ $pesanan->id_pesanan }}').classList.remove('hidden')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm">
                                 Bayar
                             </button>
+ 
                         </td>
                     </tr>
 

@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StrukController;
 use App\Http\Controllers\AdminDataPengguna;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\DashboardController;
@@ -55,6 +56,9 @@ Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
       Route::get('/reservasi', [AdmminReservasiController::class, 'index'])->name('admin.reservasi.index');
     Route::put('/reservasi/{id}/status', [AdmminReservasiController::class, 'updateStatus'])->name('admin.reservasi.updateStatus');
     Route::get('/laporan-penjualan', [AdminLaporanController::class, 'index'])->name('admin.laporan.index');
+
+Route::get('/admin/struk/{id}', [StrukController::class, 'show'])->name('admin.pesanan.struk');
+
 
 });
 
